@@ -1,7 +1,13 @@
-""" TODO: Put your header comment here """
+"""
+Joseph Lee
+Software Design Mini-Project 5
+Computational Art
+"""
 
 import random
 from PIL import Image
+import math
+import cv2
 
 
 def build_random_function(min_depth, max_depth):
@@ -15,7 +21,6 @@ def build_random_function(min_depth, max_depth):
                  (see assignment writeup for details on the representation of
                  these functions)
     """
-    import random
     recursion_depth=random.randint(min_depth,max_depth)
     building_blocks_no_params=["x","y"]
     building_blocks_one_param=["cos_pi","sin_pi","x","y"]
@@ -44,40 +49,31 @@ def evaluate_random_function(f, x, y):
         >>> evaluate_random_function(['prod',['x'],['y']],.5,-.5)
         -0.25
     """
-    import math
     if f[0] == 'y':
 	    return y
-    if f[0] == 'x':
+    elif f[0] == 'x':
 	    return x
-    if len(f) == 1:
+    elif len(f) == 1:
         if f[0] == 'x': 
             return x
         elif f[0] == 'y':
 	    	return y
 
-    if f[0] == 'avg':
+    elif f[0] == 'avg':
         arg = evaluate_random_function(f[1],x,y)
         arg1 = evaluate_random_function(f[2],x,y) 
         return .5*(arg+arg1)
 
-    if f[0] == 'prod':
+    elif f[0] == 'prod':
         arg = evaluate_random_function(f[1],x,y)
         arg1 = evaluate_random_function(f[2],x,y)        
         return float(arg)*float(arg1)
 
-    if f[0] == 'x':
-        arg = evaluate_random_function(f[1],x,y)
-        return arg
-
-    if f[0] == 'y':
-        arg = evaluate_random_function(f[2],x,y) 
-        return Y
-
-    if f[0] == 'cos_pi':
+    elif f[0] == 'cos_pi':
         arg = evaluate_random_function(f[1],x,y)
         return math.cos(math.pi * arg)
 
-    if f[0] == 'sin_pi':
+    elif f[0] == 'sin_pi':
         arg = evaluate_random_function(f[1],x,y)
         return math.sin(math.pi * arg)
 
@@ -130,7 +126,6 @@ def color_map(val):
         >>> color_map(0.5)
         191
     """
-    # NOTE: This relies on remap_interval, which you must provide
     color_code = remap_interval(val, -1, 1, 0, 255)
     return int(color_code)
 
@@ -156,9 +151,9 @@ def test_image(filename, x_size=350, y_size=350):
 
 
 def generate_art(filename, x_size=350, y_size=350):
-    red_function=build_random_function(10, 15)
-    green_function=build_random_function(10, 20)
-    blue_function=build_random_function(10, 10)
+    red_function=build_random_function(2, 5)
+    green_function=build_random_function(2, 5)
+    blue_function=build_random_function(2, 5)
     im = Image.new("RGB", (x_size, y_size))
     pixels = im.load()
     for i in range(x_size):
@@ -177,12 +172,21 @@ def generate_art(filename, x_size=350, y_size=350):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+    """
+    I started working on implementing the creation of a movie.  I have not
+    introduced the third variable t so the video would be choppy since each
+    frame is completely random and not connected to the previous frame in any
+    way.  I ran out of time and so I did not finish implementing the movie creation
 
-    # Create some computational art!
-    # TODO: Un-comment the generate_art function call after you
-    #       implement remap_interval and evaluate_random_function
-    generate_art("example4.png")
-    print "done"
-    # Test that PIL is installed correctly
-    # TODO: Comment or remove this function call after testing PIL install
-    #test_image("noise.png")
+    """
+    num_frames=10
+    for frame in range(num_frames):
+    	filename="{}.jpg".format(frame)
+    	generate_art(filename)
+    video = cv2.VideoWriter('video.avi',-1,1,(350,350))
+    for i in range(num_frames):
+    	img=cv2.imread("{}.jpg".format(i))
+    	video.write(img)
+
+cv2.destroyAllWindows()
+video.release()
